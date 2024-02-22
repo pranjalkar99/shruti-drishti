@@ -1,0 +1,8 @@
+transformers
+accelerate
+scikit-learn
+torch
+torchvision
+torchaudio
+pytorchvideo
+evaluate
