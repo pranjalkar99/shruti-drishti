@@ -2,7 +2,10 @@
 import os
 import pathlib
 from shutil import copy2
-
+import wandb
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+import random
+from pytorch_lightning.loggers import WandbLogger
 from sklearn.model_selection import train_test_split
 
 import evaluate
@@ -30,14 +33,27 @@ from torchvision.transforms import (
 
 from transformers import VideoMAEImageProcessor, VideoMAEForVideoClassification
 from transformers import TrainingArguments, Trainer
+wandb.init(
+        project="hackathon-os", 
+        name="train_5_t1",
+        config={
+            "model": "MCG-NJU/videomae-base",
+            "batch_size": 8,
+            "learning_rate": 5e-5,
+            "num_epochs": 1500,
+            "warmup_ratio":0.1,
+            "logging_steps":10,
+            # Add more hyperparameters as needed
+        }
+    )
 
-
+os.environ('CUDA_VISIBLE_DEVICES') = '0,1'
 
 ######################################################################################
 ######################          DEFINE PATHS HERE      ###############################
 ######################################################################################
 
-dataset_root_path = 'output' # Refer from utils.py
+dataset_root_path = './Datav1'
 model_ckpt = "MCG-NJU/videomae-base"
 batch_size = 8
 
@@ -45,8 +61,9 @@ batch_size = 8
 ######################################################################################
 ######################################################################################
 
-
-class_labels = sorted({str(path).split("/")[-2] for path in all_video_file_paths})
+all_video_file_paths = dataset_root_path
+# Get all the subdirectories in the training folder
+class_labels = sorted([d.name for d in os.scandir(os.path.join(dataset_root_path, "train")) if d.is_dir()])
 label2id = {label: i for i, label in enumerate(class_labels)}
 id2label = {i: label for label, i in label2id.items()}
 
@@ -58,6 +75,8 @@ model = VideoMAEForVideoClassification.from_pretrained(
     id2label=id2label,
     ignore_mismatched_sizes=True,  # provide this in case you're planning to fine-tune an already fine-tuned checkpoint
 )
+device = "cuda" #if torch.cuda.is_available() else "cpu"  ## Force to train on GPU
+model.to(device)
 
 mean = image_processor.image_mean
 std = image_processor.image_std
@@ -141,7 +160,8 @@ new_model_name = f"{model_name}-finetuned-ucf101-subset"
 ######### out yourself, use ray to find them. But first train and see the acc. 
 ######### From what I read you will need around 1500-2000 epochs
 num_epochs = 5
-
+wandb.watch(model, log_freq=100)
+wandb_logger = WandbLogger(log_model='all')
 args = TrainingArguments(
     new_model_name,
     remove_unused_columns=False,
@@ -156,15 +176,29 @@ args = TrainingArguments(
     metric_for_best_model="accuracy",
     # push_to_hub=True,
     max_steps=(train_dataset.num_videos // batch_size) * num_epochs,
+    report_to="wandb",
 )
 
 
 metric = evaluate.load("accuracy")
 
-def compute_metrics(eval_pred):
-    """Computes accuracy on a batch of predictions."""
-    predictions = np.argmax(eval_pred.predictions, axis=1)
-    return metric.compute(predictions=predictions, references=eval_pred.label_ids)
+def compute_metrics(pred):
+    logits, labels = pred
+    predictions = np.argmax(logits, axis=-1)
+
+    accuracy = accuracy_score(labels, predictions)
+    precision, recall, f1, _ = precision_recall_fscore_support(labels, predictions, average="weighted")
+
+    # Additional metrics can be added as needed
+    # For example, you can add more classification metrics or any custom metrics
+
+    return {
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+    }
+
 
 
 
@@ -178,45 +212,64 @@ def collate_fn(examples):
     return {"pixel_values": pixel_values, "labels": labels}
 
 
+
+    # Create Trainer instance with WandBCallback
 trainer = Trainer(
-    model,
-    args,
-    train_dataset=train_dataset,
-    eval_dataset=val_dataset,
-    tokenizer=image_processor,
-    compute_metrics=compute_metrics,
-    data_collator=collate_fn,
-)
+        model,
+        args,
+        device_map = 'auto', 
+        train_dataset=train_dataset,
+        eval_dataset=val_dataset,
+        tokenizer=image_processor,
+        compute_metrics=compute_metrics,
+        data_collator=collate_fn,
+        
+    )
 
-# This is ray hyperparameter search script. Only do this after training initial model
-# Untested code
+    
 
-# from ray import tune
-# from ray.tune.search.hyperopt import HyperOptSearch
-# from ray.tune.schedulers import ASHAScheduler
-# def model_init():
-#     return VideoMAEForVideoClassification.from_pretrained(
-#                                  model_ckpt,
-#                                 label2id=label2id,
-#                                 id2label=id2label,
-#                                 ignore_mismatched_sizes=True,  # provide this in case you're planning to fine-tune an already fine-tuned checkpoint
-#                                 )
-# trainer = Trainer(
-#     model_init=model_init,
-#     args = args,
-#     train_dataset=train_dataset,
-#     eval_dataset=val_dataset,
-#     tokenizer=image_processor,
-#     compute_metrics=compute_metrics,
-#     data_collator=collate_fn,
-# )
+# ... (previous code)
+
+from tqdm import tqdm
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+
+# ... (remaining imports)
+
+# Print the number of samples found in each dataset
+# print(f"Number of samples in training dataset: {len(train_dataset)}")
+# print(f"Number of samples in validation dataset: {len(val_dataset)}")
+# print(f"Number of samples in test dataset: {len(test_dataset)}")
+
+trainer.train()
+# # Training loop
+# for epoch in tqdm(range(num_epochs), desc="Epochs", unit="epoch"):
+#     # Training
+#     trainer.train()
+    
+#     # Validation
+#     eval_results = trainer.evaluate()
+#     print("***** Evaluation Results *****")
+#     for key, value in eval_results.items():
+#         print(f"{key}: {value}")
+
+# # Save the model
+trainer.save_model()
+print("Model saved to:", 'out')
+
+wandb.finish()
 
 
-# best_run = trainer.hyperparameter_search(
-#     direction="maximize",
-#     backend="ray",
-#     search_alg=HyperOptSearch(metric='objective', mode = 'max'),
-#     scheduler=ASHAScheduler(metric="objective", mode="max"),
-# )
+# Additional information during and after training
+print("***** Training Finished *****")
+print(f"Total training time: {trainer.total_training_time:.2f} seconds")
 
-train_results = trainer.train()
+# Evaluation on the validation set
+eval_results = trainer.evaluate()
+print("***** Evaluation Results *****")
+for key, value in eval_results.items():
+    print(f"{key}: {value}")
+
+# Save the model
+trainer.save_model()
+print("Model saved to:", 'out')
+
