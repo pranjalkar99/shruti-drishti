@@ -1,5 +1,5 @@
 # Video Demo
-[![Demo for ISL based Sign Language Detection](https://img.youtube.com/vi/WsnubMzE8yM/0.jpg)](https://www.youtube.com/watch?v=WsnubMzE8yM)
+[![Demo for ISL based Sign Language Detection](https://img.youtube.com/vi/WsnubMzE8yM/0.jpg)](https://youtu.be/hR-aP7o53iQ)
 
 
 # Problem Statement
