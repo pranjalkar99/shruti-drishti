@@ -54,6 +54,8 @@ Model was fine-tuned in several stages: \n
   <br/> <br/> <br/>
 <b>Find the Training Reports here:</b> https://github.com/pranjalkar99/shruti-drishti/issues/9
 
+## Model Checkpoints:
+https://huggingface.co/bhaswata08/MAEFORMER
 
 # Solution
 
