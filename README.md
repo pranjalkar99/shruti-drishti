@@ -17,32 +17,42 @@ The lack of accessibility and communication tools poses challenges for education
 Dataset has been sourced from AI4Bharat (source: https://zenodo.org/record/4010759).
 
 The INCLUDE dataset has 4292 videos The videos used for training are mentioned in train.csv (3475), while that used for testing is mentioned in test.csv (817 files). Each video is a recording of 1 ISL sign, signed by deaf students from St. Louis School for the Deaf, Adyar, Chennai.
-
+<br/>
 For our Prototype, we have included 8 
 categories with 79 videos in Train split, 14 videos in test split and 11 videos in validation split. 
 
 The given categories are assessed.
-Beautiful
-Blind
-Deaf
-Happy
-Loud
-Quiet
-sad
-Ugly
+- Beautiful
+- Blind
+- Deaf
+- Happy
+- Loud
+- Quiet
+- sad
+- Ugly
 
 
 # Model Details:
+
+For real time Sign Language Detection, We've tested two distinct models: an LSTM-based model and a Transformer-based model.
+<br/>
+The LSTM model leverages keypoints extracted from Mediapipe for poses, which are then fed into the recurrent neural network (RNN) for evaluation.
+
+On the other hand, the Transformer model is trained after experimentation involving a range of transformations and hyperparameter tuning to optimize its performance.
+
+These two approaches offer unique pathways for analyzing and interpreting input data, catering to different requirements and scenarios within our application.
+<br/>
 
 The VideoMAE model was proposed in VideoMAE: Masked Autoencoders are Data-Efficient Learners for Self-Supervised Video Pre-Training by Zhan Tong, Yibing Song, Jue Wang, Limin Wang. VideoMAE extends masked auto encoders (MAE) to video, claiming state-of-the-art performance on several video classification benchmarks.
 
 Several techniques such as qLORA, peft, and head and backbone fine-tuning and only head fine-tuning was tried and Ultimately, only fine-tuning the head and backbone of the model was found out to be successful, in our case.
 
-Model was fine-tuned in several stages:
-RUN 1: Fine-tuned using linear scheduler with constant decay for initial training. Run 1 was not as successful as we hoped hence forth run 2 was initialized.
-RUN 2: A hyperparameter grid search was conducted for the given run for finding the optimal hyperparams. 
-RUN 3: A final run was initialized which was successful. 
-Find the Training Reports here: https://github.com/pranjalkar99/shruti-drishti/issues/9
+Model was fine-tuned in several stages: \n
+- RUN 1: Fine-tuned using linear scheduler with constant decay for initial training. Run 1 was not as successful as we hoped hence forth run 2 was initialized.
+- RUN 2: A hyperparameter grid search was conducted for the given run for finding the optimal hyperparams. 
+- RUN 3: A final run was initialized which was successful.
+  <br/> <br/> <br/>
+<b>Find the Training Reports here:</b> https://github.com/pranjalkar99/shruti-drishti/issues/9
 
 
 # Solution
@@ -94,6 +104,14 @@ Our proposed solution involves using deep learning models to facilitate communic
 
 ## Proposed Workflow (credits to the Open Source Paper)
 ![image](https://github.com/pranjalkar99/shruti-drishti/assets/74347116/4636a003-09f4-4953-92ad-c3df4b9fea1e)
+
+## Results:
+
+[![image](https://github.com/pranjalkar99/shruti-drishti/assets/74347116/3541813b-52c2-4c10-a7ac-88096aac62b4)](https://www.canva.com/design/DAF_IfblIbM/Hm_cvyUw6vNEf8-RXg68fg/edit?utm_content=DAF_IfblIbM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
+<br/>
+![Uploading image.png…]()
+(https://www.canva.com/design/DAF_IfblIbM/Hm_cvyUw6vNEf8-RXg68fg/edit?utm_content=DAF_IfblIbM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 
 
