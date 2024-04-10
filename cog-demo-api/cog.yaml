@@ -1,0 +1,19 @@
+build:
+  gpu: true
+  system_packages:
+    - "libgl1-mesa-glx"
+    - "libglib2.0-0"
+  python_version: "3.10"  # Adjust the Python version as needed
+  python_packages:
+    - tensorflow==2.11.0
+    - "opencv-python"
+    - "mediapipe"
+    - "sklearn
+    - Pillow==9.2.0
+    - alt-profanity-check==1.0.1
+    - tensorflow-hub==0.13.0"
+
+run:
+    - pip install 'protobuf<=3.20.1' --force-reinstall
+
+predict: "predict.py:Predictor"
