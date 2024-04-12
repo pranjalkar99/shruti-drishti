@@ -101,11 +101,12 @@ Our proposed solution involves using deep learning models to facilitate communic
 - [x] Basic Deep Learning-based LSTM model for sign language recognition (Done)
 - [x] Custom multi-headed attention-based encoder for sign language recognition for dynamic signs (Done)
 - [x] Testing on the whole Indian dataset for our attention model (In Progress)
-- [ ] Implementing the pose-to-text and the implementation of the paper (In Progress)
-- [ ] Build multilingual app (To Do)
+- [x] Implementing the pose-to-text and the implementation of the paper (In Progress)
+- [x] Build multilingual app (To Do)
 
-## Proposed Workflow (credits to the Open Source Paper)
-![image](https://github.com/pranjalkar99/shruti-drishti/assets/74347116/4636a003-09f4-4953-92ad-c3df4b9fea1e)
+## Text-to-Speech Modules 
+The code can be found in the backend/text2sign folder.
+![WhatsApp Image 2024-04-12 at 05 42 26_b2876588](https://github.com/pranjalkar99/shruti-drishti/assets/74347116/cc220e67-bb4b-4dcc-bde7-7fa3fcded058)
 
 ## Results:
 
