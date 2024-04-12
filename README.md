@@ -7,6 +7,10 @@
 
 Shruti-Drishti is an innovative project aimed at addressing the communication gap between the deaf and non-deaf communities in South Asia, particularly in India. By leveraging deep learning models and state-of-the-art techniques, we strive to facilitate seamless communication and promote inclusivity for individuals with hearing impairments. 🌟
 
+## DEMO VIDEO
+![Demo for ISL based Sign Language Detection](https://img.youtube.com/vi/WsnubMzE8yM/0.jpg)
+
+
 ## Key Features ✨
 
 1. **Sign Language to Text Conversion** 🖐️➡️📝: Our custom Transformer-based Multi-Headed Attention Encoder, powered by Google's Tensorflow Mediapipe, accurately converts sign language videos into text, overcoming challenges related to dynamic sign similarity.
