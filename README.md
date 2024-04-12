@@ -1,6 +1,6 @@
 ![Synapse ai](https://github.com/pranjalkar99/shruti-drishti/assets/106006087/e6811f64-ed88-48d0-a04d-d41bf85b4668)
 
-
+![Main presentation](https://www.canva.com/design/DAGCJAS6jlU/LLS2hNUTG0Z_tMLmPdM1UQ/view?utm_content=DAGCJAS6jlU&utm_campaign=designshare&utm_medium=link&utm_source=editor)
 # Shruti-Drishti: Bridging the Communication Gap for the Deaf Community in India 🌉🇮🇳
 
 ## Introduction 🙌
