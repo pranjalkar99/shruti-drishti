@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Text to Sign Language</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="app" class="container mt-5">
+        <div class="form-group">
+            <h1>Welcome to the demo of text2sign converter using Langgraph and Langchain.</h1>
+            <label for="textInput">Enter Sentence:</label>
+            <textarea class="form-control" id="textInput" rows="3" v-model="sentence"></textarea>
+        </div>
+        <button class="btn btn-primary" @click="generate" :disabled="loading || !sentence">Generate</button>
+        <button class="btn btn-primary" @click="getLastPath">Fetch</button>
+        <!-- Loading spinner -->
+        <div v-if="loading" class="spinner-border text-primary mt-3" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+
+        <!-- Error message -->
+        <div v-if="error" class="alert alert-danger mt-3" role="alert">
+            {{ error }}
+        </div>
+
+        <!-- Success card -->
+        <div  class="card mt-3">
+            <div class="card-header">
+                Generated Video
+                
+                <a :href="videoPath">Click here to download the video</a>
+            </div>
+            <div class="card-body">
+                <video controls>
+                    <source :src="videoPath" type="video/mp4">
+                    
+                    <video controls width="640" height="360">
+                        <source src="http://localhost:5500/merged/8_5_c_a_c_a_2_b_1_e_f_f_4_3_d_5_9_3_3_f_7_1_c_c_2_a_3_4_a_2_f_e.mov" type="video/quicktime">
+                        Your browser does not support the video tag.
+                    </video>
+                    
+                    
+                    
+                    Your browser does not support the video tag.
+                </video>
+                
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                sentence: '',
+                loading: false,
+                success: false,
+                error: '',
+                videoPath: '',
+                retryCount: 0,
+                maxRetries: 5
+            },
+            methods: {
+                generate: async function () {
+                    if (this.loading || !this.sentence) return; // Prevent sending requests while already loading or if sentence is empty
+
+                    this.loading = true;
+                    this.error = '';
+                    this.success = false;
+
+                    try {
+                        const response = await fetch(`http://localhost:7002/classify?prompt=${encodeURIComponent(this.sentence)}`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+
+                        // If the response is successful, parse the JSON data
+                        const data = await response.json();
+                        console.log(data);
+                    } catch (error) {
+                        // If there's an error, handle it here
+                        console.error('Error:', error);
+                        this.error = 'LLM fetching error. Retrying and resending...';
+                        if (response.status === 500 && this.retryCount < this.maxRetries) {
+                            this.retryCount++;
+                            setTimeout(() => {
+                                this.generate();
+                            }, 30000); // Retry after 10 seconds
+                        } else {
+                            this.error = 'Maximum retries exceeded or non-500 error.';
+                        }
+                    } finally {
+                        // This block will be executed regardless of whether there was an error or not
+                        this.loading = false;
+                    }
+                },
+                getLastPath: async function () {
+                    try {
+                        let fullpath = "";
+                        const response = await fetch('http://localhost:7002/last-path');
+                        const data = await response.json();
+                        if (data !== "") {
+                            console.log(data);
+                            fullpath = data.last_path;
+                            var extractedPath = fullpath.substring(fullpath.lastIndexOf('merged'));
+                            this.videoPath = `http://localhost:5500/${extractedPath}`;
+                            console.log("This is the Videopath",this.videoPath);
+                        }
+                    } catch (error) {
+                        console.error('Error getting last path:', error);
+                        setTimeout(() => {
+                            this.generate();
+                        }, 1000);
+                    }
+                }
+            
+            }
+        });
+    </script>
+</body>
+
+</html>
