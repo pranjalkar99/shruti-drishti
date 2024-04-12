@@ -69,7 +69,7 @@ Shruti-Drishti tackles the communication gap through a two-fold approach:
 - [x] Testing on the whole Indian dataset for our attention model (Done)
 - [x] Implementing the pose-to-text using agentic framework (Langgraph) (Done)
 - [x] Build multilingual app (Done)
-- [ ] Build Demo and update repo (In Progress)
+- [x] Build Demo and update repo (Done)
 
 ## Results 📈
 
