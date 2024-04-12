@@ -1,0 +1,10 @@
+langchain
+langgraph
+fastapi
+uvicorn
+torch
+torchvision
+torchtext
+transformers
+pydantic
+moviepy
