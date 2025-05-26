@@ -81,6 +81,11 @@ For detailed results and insights, please refer to our [presentation slides](htt
 ### LSTM
 (TODO)
 
+## Honourable Mentions
+
+We wish to express our special gratitude to Hasgeek for their invaluable guidance and for providing us with the opportunity to participate in the Hasgeek Open Source Hackathon, an event in which we were honored to be among the winning teams. 
+ [Winner Synapse](https://drive.google.com/file/d/1du1r4c_MqsugYkY5Y8ox0wkYK5CpnpyW/view)
+
 ## Other Links 🔗
 
 - [Demo Video](https://www.youtube.com/watch?v=hR-aP7o53iQ)
